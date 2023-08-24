@@ -1,0 +1,3 @@
+map,{hashmap, linkedhashmap, treemap}, set{}, list{linkedlist, arraylist, deque}, p_q,
+string, arrays, foreach
+streams,
