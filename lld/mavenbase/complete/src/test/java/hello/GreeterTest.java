@@ -1,13 +1,13 @@
 package hello;
 
+import org.junit.Test;
+
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.*;
 
-import org.junit.Test;
-
 public class GreeterTest {
 	
-	private Greeter greeter = new Greeter();
+	private hello.Greeter greeter = new hello.Greeter();
 
 	@Test
 	public void greeterSaysHello() {
