@@ -1,0 +1,33 @@
+Student[] s1 = {
+                new Student("beta", 11),
+                new Student("alpha", 10),
+                new Student("beta", 121),
+
+                new Student("alpha", 12)
+        };
+
+        Arrays.sort(s1, (Student a, Student b) -> {
+            if (a.name.equals(b.name)) {
+                return a.age - b.age;
+            }
+            return a.name.compareTo(b.name);
+        });
+
+
+there is music streaming service, requests landing on single server, what can be problems?
+
+password checker service:
+password checked in english words, don't accept it.
+accept if:
+check length 8-12 chars
+should have one uppercase, lowercase, special symbol
+what is problem and solution?
+
+game card recharge through credit card/cash payment console.
+125000 machines needs to be installed. what is problem?
+
+file storage service:
+incoming file is checked with existing file contents byte by byte. 
+if duplicate found a symlink is created.
+what is problem and how to solve it?
+

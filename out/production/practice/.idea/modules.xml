@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/practice.iml" filepath="$PROJECT_DIR$/.idea/practice.iml" />
-      <module fileurl="file://$PROJECT_DIR$/ratelimiter.iml" filepath="$PROJECT_DIR$/ratelimiter.iml" />
     </modules>
   </component>
 </project>
