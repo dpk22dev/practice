@@ -7,16 +7,20 @@ public class ThreadJoinExample {
         Thread t2 = new Thread(new MyRunnable("t2"), "t2");
         Thread t3 = new Thread(new MyRunnable("t3"), "t3");
 
+        t1.setUncaughtExceptionHandler((t, ex) -> {
+            System.out.println(t.getName() + " threw " + ex.getMessage());
+        });
         t1.start();
+        t1.interrupt();
 
         // start second thread after waiting for 2 seconds or if it's dead
         try {
-            t1.join(2000);
-        } catch (InterruptedException e) {
+            t1.join(200);
+        } catch (Exception e) {
             e.printStackTrace();
         }
         System.out.println("Main: after t1 joined");
-
+        /*
         t2.start();
 
         // start third thread only when first thread is dead
@@ -39,8 +43,9 @@ public class ThreadJoinExample {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
+*/
         System.out.println("All threads are dead, exiting main thread");
+
     }
 
 }
@@ -53,10 +58,11 @@ class MyRunnable implements Runnable {
     }
 
     @Override
-    public void run() {
+    public void run() throws RuntimeException {
         System.out.println("Thread started: " + Thread.currentThread().getName());
         try {
-            Thread.sleep(4000);
+            Thread.sleep(100);
+            throw new RuntimeException("hello");
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

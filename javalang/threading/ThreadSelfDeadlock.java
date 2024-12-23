@@ -1,5 +1,8 @@
 package javalang.threading;
 
+/*
+it doesn't deadlock on same object
+ */
 public class ThreadSelfDeadlock {
     public static void main(String[] args) {
         Object obj1 = new Object();

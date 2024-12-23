@@ -1,6 +1,8 @@
 package javalang.faltu;
 
+import java.util.Deque;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 /*
@@ -52,6 +54,10 @@ public class HashCodeTesting {
         AbstractKey abstractKey1 = (AbstractKey) keyIface2;
         System.out.println( abstractKey1.hashCode() + " , " + keyIface1.hashCode() + " , " + keyIface2.hashCode() );
         System.out.println( "equal: " + keyIface1.equals( keyIface2 ) );
+
+        Deque deque;
+        LinkedList ll;
+
 
     }
 

@@ -1,84 +1,39 @@
 package progs;// you can also use imports, for example:
-import java.util.*;
 
-// you can write to stdout for debugging purposes, e.g.
-// System.out.println("this is a debug message");
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-class Solution {
+public class Solution {
+    public static List<List<Integer>> mergeOverlappingIntervals(int[][] arr) {
+        // Write your code here.
+        Arrays.sort(arr, (x, y) -> {
+            return x[1] - y[1];
+        });
+        List<List<Integer>> res = new ArrayList<>();
+        int n = arr.length;
+        res.add(Arrays.asList(arr[0][0], arr[0][1]));
+        for (int i = 1; i < n; i++) {
+            int cur[] = arr[i];
+            List<Integer> top = res.get(res.size() - 1);
+            if (cur[0] <= top.get(1)) {
+                List<Integer> temp = Arrays.asList(Math.min(top.get(0), cur[0]), Math.max(top.get(1), cur[1]));
+                res.remove(res.size() - 1);
+                res.add(temp);
+            } else {
+                res.add(Arrays.asList(cur[0], cur[1]));
+            }
+        }
 
-  static class Point{
-    public char tag;
-    public int x, y;
-    Point( char tag, int i, int j){
-      this.tag = tag;
-      this.x = i;
-      this.y = j;
+        return res;
     }
 
-  }
-
-  static class PointSet{
-    public double dist;
-    public List<Point> points;
-
-    PointSet( double d ){
-      this.dist = d;
-      this.points = new ArrayList<Point>();
+    public static void main(String[] args) {
+        //int a = 2, c =3, d=a;
+        //int a,b,c;
+        int[][] arr = {{2, 2}, {2, 3}, {2, 5}, {3, 6}, {4, 4}, {4, 5}, {6, 6}};
+        List<List<Integer>> res = mergeOverlappingIntervals(arr);
     }
 
-  }
-
-  private boolean hasRepeatedPoints( List<Point> list){
-    Set<Character> set = new HashSet<>();
-    for( Point p: list ){
-      if( set.contains(p.tag) )
-        return true;
-      set.add( p.tag );
-    }
-    return false;
-  }
-
-  public boolean isListPointPartOfResultSet( List<Point> list, Set<Character> resSet ){
-    for( Point p : list ){
-      if( resSet.contains( p.tag )){
-        return true;
-      }
-    }
-    return false;
-  }
-
-  public int solution(String S, int[] X, int[] Y) {
-    // Implement your solution here
-    Map<Double, List<Point>> distMap = new TreeMap<Double, List<Point>>();
-    double dist;
-    for( int i = 0; i < S.length(); i++ ){
-      int x = X[i]; int y = Y[i];
-      dist = Math.sqrt( x*x + y*y );
-      Point p = new Point( S.charAt(i), x, y );
-      distMap.computeIfAbsent( dist, (k) -> { return new ArrayList<Point>(); } );
-      distMap.computeIfPresent( dist, (k,list) -> { list.add(p); return list;} );
-    }
-    Set<Character> resSet = new HashSet<Character>();
-    for( Map.Entry<Double, List<Point>> entry : distMap.entrySet() ){
-      List<Point> mapList = entry.getValue();
-      if( hasRepeatedPoints( mapList ) ){
-        break;
-      }
-      if( isListPointPartOfResultSet( mapList, resSet) ){
-        break;
-      }
-      for( Point p : mapList ){
-        resSet.add( p.tag );
-      }
-    }
-    return resSet.size();
-  }
-
-  public static void main(String[] args) {
-    //int X[] = new int[]{1, -2, -2};
-    Solution s = new Solution();
-    int res = s.solution("ABB", new int[]{1, -2, -2}, new int[]{1, -2, 2});
-    System.out.println( res );
-  }
 
 }
