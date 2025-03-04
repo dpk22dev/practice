@@ -1,5 +1,8 @@
 package javalang.threading;
 
+/*
+main thread exits independently once done. thread B keeps on running independently untill done
+ */
 public class ThreadSchedulerTest {
     public static void main(String[] args) {
 
@@ -14,7 +17,7 @@ public class ThreadSchedulerTest {
                 e.printStackTrace();
             }
         }
-
+        System.out.println("Main thread is done!!");
     }
 
 

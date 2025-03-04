@@ -31,6 +31,10 @@ public class NewDateTime {
         LocalDateTime localDateTime = LocalDateTime.of(2015, Month.FEBRUARY, 20, 06, 30);
         System.out.println(localDateTime);
 
+        LocalDateTime ldt2 = ldt1.plus(2, ChronoUnit.HOURS);
+        Duration duration = Duration.between(ldt2, ldt1);
+        duration.getSeconds();
+
         LocalDate initialDate = LocalDate.parse("2007-05-10");
         LocalDate finalDate = initialDate.plus(Period.ofDays(5));
         int days = Period.between(initialDate, finalDate).getDays();

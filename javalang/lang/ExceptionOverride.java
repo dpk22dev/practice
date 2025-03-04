@@ -7,6 +7,15 @@ Serializable <- Throwable <- Error(don't catch)
 Exception or its subclass forces coder to declare/catch exception
  */
 
+/*
+The differentiation exists to strike a balance between enforcing error handling at compile time
+and providing flexibility to handle runtime issues.
+Checked exceptions: good when caller must take responsibility for handling the error
+Unchecked exception: good when caller cannot reasonably recover from the error, and fixing the code to handle data which caused
+                    this exception is the right solution
+
+ */
+
 public class ExceptionOverride {
     static class MyException extends Exception{
         public MyException(String message) {
@@ -43,12 +52,20 @@ public class ExceptionOverride {
 
     public static void main(String[] args) {
         ExceptionOverride exceptionOverride = new ExceptionOverride();
-        //exceptionOverride.genMyError();
+        try {
+            exceptionOverride.genMyError();
+        } catch (Throwable throwable) {
+            System.out.println(" catching error " + throwable.getMessage());
+        }
         try {
             exceptionOverride.genMyException();
         } catch (MyException e) {
             System.out.println( "caught exc " + e.getMessage() );
         }
-        exceptionOverride.genMyRunTimeException();
+        try {
+            exceptionOverride.genMyRunTimeException();
+        } catch (Throwable throwable) {
+            System.out.println(" caught runtime exc " + throwable.getMessage());
+        }
     }
 }

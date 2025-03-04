@@ -1,0 +1,2060 @@
+        public static boolean detectCycle(LinkedListNode head) {
+
+            // Replace this placeholder return statement with your code
+            if( head == null ) return false;
+            if( head.next == head )
+                return true;
+            LinkedListNode s = head, f = head;
+            boolean cycle = false;
+            while( f != null && f.next != null ){
+                s = s.next;
+                f = f.next.next;
+                if( s == f ){
+                    cycle = true;
+                    break;
+                }
+            }
+            return cycle;
+        }
+
+
+import java.util.*;
+
+class Solution {
+
+  private static int findFloor(int arr[][], int t[]){
+    int l = 0, h = arr.length-1, m=0;
+    while( l < h ){
+      m = l + (h-l)/2;
+      if( t[0] == arr[m][0] ){
+        return m;
+      } else if( t[0] < arr[m][0] ){
+        h = m-1;
+      } else {
+        l = m+1;
+      }
+    }
+    return l;
+  }
+
+  private static int findCeil(int arr[][], int t[]){
+    int l = 0, h = arr.length-1, m=0;
+    while( l < h ){
+      m = l + (h-l)/2;
+      if( t[1] == arr[m][1] ){
+        return m;
+      } else if( t[1] > arr[m][1] ){
+        l = m+1;
+      } else {
+        h = m-1;
+      }
+    }
+    return h;
+  }
+
+  public static int[][] insertInterval(int[][] existingIntervals, int[] newInterval) {
+
+    // Replace this placeholder return statement with your code
+    int f = findFloor(existingIntervals, newInterval);
+    int c = findCeil(existingIntervals, newInterval);
+
+    int newLen = existingIntervals.length-(c-f+1)+1;
+    System.out.println("f "+f + " c "+c + " newLen " + newLen);
+    int res[][] = new int[newLen][2];
+    int j = 0;
+    for( int i = 0; i <= f; i++, j++ ){
+      res[j][0] = existingIntervals[i][0];
+      res[j][1] = existingIntervals[i][1];
+    }
+      res[j][0] = Math.min( newInterval[0], existingIntervals[f][0] );
+      res[j][1] = Math.max( newInterval[1], existingIntervals[c][1] );
+
+    ++j;
+    try{
+    for( int i = c+1; i < existingIntervals.length; i++, j++ ){
+      res[j][0] = existingIntervals[i][0];
+      res[j][1] = existingIntervals[i][1];
+    }
+    } catch(Exception ex){
+
+    }
+    return res;
+  }
+}
+
+import java.util.*;
+
+class Solution {
+
+  public static int[][] insertInterval(int[][] existingIntervals, int[] newInterval) {
+
+    // Replace this placeholder return statement with your code
+    Deque<int []> deque = new LinkedList<int []>();
+    int i = 0, low, j,high;
+    while( i < existingIntervals.length && existingIntervals[i][0]  <=  newInterval[0] ){
+      deque.addLast( new int[]{existingIntervals[i][0], existingIntervals[i][1]} );
+      i++;
+    }
+    if( i == existingIntervals.length ){
+      deque.addLast( new int[]{newInterval[0], newInterval[1]} );
+    } else {
+      if( deque.size() == 0 ){
+        low = newInterval[0];
+      } else {
+        int[] lastEle = deque.removeLast();
+        low = Math.min( newInterval[0], lastEle[0] );
+      }
+      j = i;
+      while( j < existingIntervals.length && existingIntervals[j][1] < newInterval[1] ){
+        j++;
+      }
+      if( newInterval[1] < existingIntervals[j][1] && newInterval[1] > existingIntervals[j][0]  ){
+        j++;
+      }
+
+      high = Math.max(existingIntervals[j][1], newInterval[1]);
+      deque.addLast( new int[]{ low, high });
+      i = ++j;
+      while( i < existingIntervals.length ){
+        deque.addLast( new int[]{existingIntervals[i][0], existingIntervals[i][1]} );
+        i++;
+      }
+    }
+
+    return deque.toArray( new int[deque.size()][] );
+
+  }
+}
+
+======
+
+import java.util.*;
+
+public class ReverseKGroups{
+
+    static class Payload{
+      public LinkedListNode f,l,n;
+      public Boolean isRemaining;
+    }
+
+    public static Payload reverseK( LinkedListNode head, int count ){
+
+      int k = count;
+      Payload payload = new Payload();
+      LinkedListNode cur = head, p = null,c = head, n = null;
+      while(k > 0 && cur != null ){
+        cur = cur.next;
+        k--;
+      }
+      if( k > 0 ){
+        //System.out.println("less ele " + head.data );
+        payload.isRemaining = false;
+        payload.f = head;
+        return payload;
+      }
+
+      k = count;
+      c = head;
+      //System.out.println("for k: " + k + " c " + c.data);
+      while(k-- > 0 ){
+        //System.out.print(":" + c.data );
+        n = c.next;
+        if( c != null ){
+          c.next = p;
+        }
+
+        p = c;
+        c = n;
+      }
+
+      payload.f = p;
+      payload.n = c;
+      payload.l = head;
+      payload.isRemaining = true;
+      return payload;
+    }
+
+    public static LinkedListNode reverseKGroups(LinkedListNode head, int k) {
+
+        LinkedListNode dummy = new LinkedListNode(0);
+        dummy.next = head;
+        LinkedListNode last = dummy, cur = head;
+        while( true ){
+          Payload payload = reverseK( cur, k );
+          //System.out.println( "payload: " + payload.f.data + ", " + payload.l.data + ", " + payload.isRemaining );
+          if( payload.isRemaining ){
+            last.next = payload.f;
+            last = payload.l;
+            last.next = payload.n;
+            cur = payload.n;
+          } else {
+            break;
+          }
+        }
+
+        return dummy.next;
+    }
+}
+
+======
+
+import java.util.*;
+
+class MedianOfStream {
+  PriorityQueue<Integer> minHeap;
+  PriorityQueue<Integer> maxHeap;
+
+  public MedianOfStream() {
+    this.minHeap = new PriorityQueue<>( (a,b) -> a-b );
+    this.maxHeap = new PriorityQueue<>( (a,b) -> b-a );
+    // Write your code here
+  }
+
+  public void insertNum(int num) {
+    int topLeft, topEle;
+    // Write your code here
+    if( maxHeap.size() == 0 ){
+      maxHeap.offer(num);
+      return;
+    }
+    if( maxHeap.size() == minHeap.size() ){
+       topLeft = maxHeap.peek();
+      if( num < topLeft ){
+        maxHeap.offer( num );
+      } else {
+        minHeap.offer( num );
+        topEle = minHeap.poll();
+        maxHeap.offer( topEle );
+      }
+    } else {
+       topLeft = maxHeap.peek();
+       if( num > topLeft ){
+         minHeap.offer( num );
+       } else {
+         maxHeap.offer(num);
+         topEle = maxHeap.poll();
+         minHeap.offer( topEle );
+       }
+    }
+
+  }
+
+  public double findMedian() {
+      double res = 0.0;
+      if( maxHeap.size() > minHeap.size() ){
+        res = maxHeap.peek();
+      } else {
+        res = (minHeap.peek() + maxHeap.peek() )/2.0;
+      }
+      return res;
+  }
+}
+
+=====
+
+import java.util.*;
+
+class FindSmallestNumber {
+
+    private static class Payload{
+      public int data, inx;
+      Payload( int d, int x ){
+        this.data = d;
+        this.inx = x;
+      }
+    }
+
+    public static int kSmallestNumber(List<List<Integer>> lists, int k) {
+
+        // Replace this placeholder return statement with your code
+        PriorityQueue<Payload> pq = new PriorityQueue<>( (pa,pb) -> pa.data-pb.data );
+        int m = lists.size();
+        for( int i = 0; i < m; i++ ){
+          if( lists.get(i).size() > 0 ){
+            int temp = lists.get(i).remove(0);
+            pq.add( new Payload(temp, i) );
+          }
+
+        }
+
+        if( pq.size() == 0 )
+          return 0;
+
+        Payload top;
+        int max = Integer.MIN_VALUE;;
+        while( --k > 0 && pq.peek() != null ){
+          top = pq.poll();
+          max = Math.max( max, top.data );
+          if( lists.get(top.inx).size() > 0 ){
+            pq.offer( new Payload(lists.get(top.inx).remove(0), top.inx) );
+          }
+        }
+        int res = (k == 0) ? pq.peek().data : max;
+
+        return res;
+    }
+}
+=========
+
+import java.util.*;
+
+public class Solution {
+   public static int binarySearchRotated(List<Integer> nums, int target) {
+
+      // Replace this placeholder return statement with your code
+      int l = 0, h = nums.size()-1;
+      int m, ans = -1;
+      while( l <= h ){
+        m = l + (h-l)/2;
+        if( target == nums.get(m) ){
+          ans = m;
+          break;
+        }
+        if( nums.get(m) >= nums.get(l) ){
+          if( target < nums.get(m) && target >= nums.get(l) ) {
+            h = m-1;
+          } else {
+            l = m+1;
+          }
+        } else {
+          if( target > nums.get(m) && target <= nums.get(h) ){
+            l = m+1;
+          } else {
+            h = m-1;
+          }
+        }
+      }
+      return ans;
+   }
+}
+
+
+======
+
+import java.util.*;
+public class Main{
+
+
+    static void swap( char[] arr, int x, int y ){
+        char temp = arr[x];
+        arr[x] = arr[y];
+        arr[y] = temp;
+    }
+
+    static void permute( char[] arr, int inx, ArrayList<String> res ){
+
+      if( inx == arr.length ){
+        String str = new String(arr);
+        System.out.println(":" + str);
+        res.add(str);
+        return;
+      }
+
+      for( int i = inx; i < arr.length; i++ ){
+        swap( arr, inx, i);
+        permute( arr, inx+1, res);
+        swap( arr, inx, i);
+      }
+    }
+
+    public static ArrayList<String> permuteWord(String word) {
+
+        // Replace this placeholder return statement with your code
+        ArrayList<String> res = new ArrayList<>();
+        char[] arr = word.toCharArray();
+        permute( arr, 0, res);
+        return res;
+    }
+}
+========
+
+import java.util.*;
+
+public class GasStations{
+   public static int gasStationJourney(int[] gas, int[] cost) {
+
+      // Replace this placeholder return statement with your code
+      int n = gas.length, ans = -1, i, j;
+      int net[] = new int[n];
+      for( i = 0; i < n; i++ ){
+        net[i] = gas[i]-cost[i];
+      }
+      for( i = 0; i < n; i++ ){
+        if( net[i] >= 0 ){
+          int rem = 0;
+          for( j = 0; j < n; j++ ){
+            int pos = (i+j)%n;
+            rem += net[pos];
+            if( rem < 0 ){ //
+              break;
+            }
+          }
+          if( j == n ){
+            ans = i;
+            break;
+          }
+        }
+      }
+      return ans;
+   }
+}
+
+=====
+
+import java.util.*;
+
+class WordSearch {
+    // Tip: You may use some of the code templates provided
+    // in the support files
+    static int m, n;
+
+    public static boolean backtrack( char[][] grid, int i, int j, String word, int inx ){
+
+      if( i < 0 || i >= m || j < 0 || j >= n ){
+        return false;
+      }
+
+      if( inx == word.length()-1 ){
+        return ( grid[i][j] == word.charAt(inx) ) ? true : false;
+      }
+
+      boolean res = false;
+      if( grid[i][j] == word.charAt(inx) ){
+        res = res || backtrack(grid, i+1, j, word, inx+1);
+        res = res ||  backtrack(grid, i-1, j, word, inx+1);
+        res = res ||  backtrack(grid, i, j+1, word, inx+1);
+        res = res ||  backtrack(grid, i, j-1, word, inx+1);
+      }
+
+      return res;
+    }
+
+    public static boolean wordSearch(char[][] grid, String word) {
+
+        m = grid.length;
+        n = grid[0].length;
+        if( word.length() > m*n )
+          return false;
+
+        boolean res = false;
+        for( int i = 0; i < m; i++ ){
+          for( int j = 0; j < n; j++ ){
+            if( grid[i][j] == word.charAt(0) ){
+              res = backtrack( grid, i, j, word, 0 );
+              if( res == true ){
+                return true;
+              }
+            }
+          }
+        }
+        return  false;
+    }
+}
+
+=====
+
+import java.util.*;
+public class CoinChange{
+
+  static int[] coins;
+  static int total;
+  static int MX = 1000_000;
+
+  public static int f(int rem, int inx){
+    int res = MX;
+    if( inx == -1 ){
+      res = (rem == 0) ? 0 : MX;
+      return res;
+    }
+
+    int take = MX;
+    if( rem-coins[inx] >= 0 )
+      take = f(rem-coins[inx], inx) + 1;
+
+    int noTake = f( rem, inx-1 );
+    res = Math.min( take, noTake);
+    return res;
+  }
+
+   public static int coinChange(int [] c, int t) {
+      coins = c;
+      total = t;
+      if( total == 0 ) return 0;
+      int res = f(total, coins.length-1);
+
+      return res >= MX ? -1 : res;
+   }
+}
+
+
+======
+import java.util.*;
+public class CoinChange{
+
+  static int[] coins;
+  static int total;
+  static int MX = 1000_000;
+  static int[][] dp;
+
+  public static int f(int rem, int inx){
+    int res = MX;
+
+    if( dp[rem][inx+1] != -1 ){
+      return dp[rem][inx+1];
+    }
+
+    if( inx == -1 ){
+      res = (rem == 0) ? 0 : MX;
+      dp[rem][inx+1] = res;
+      return res;
+    }
+
+    int take = MX;
+    if( rem-coins[inx] >= 0 )
+      take = f(rem-coins[inx], inx) + 1;
+
+    int noTake = f( rem, inx-1 );
+    res = Math.min( take, noTake);
+    dp[rem][inx+1] = res;
+    return res;
+  }
+
+   public static int coinChange(int [] c, int t) {
+      coins = c;
+      total = t;
+      dp = new int[t+10][c.length+10];
+      for( int i = 0; i < t+10; i++ ){
+        Arrays.fill( dp[i], -1 );
+      }
+
+      if( total == 0 ) return 0;
+      int res = f(total, coins.length-1);
+
+      return res >= MX ? -1 : res;
+   }
+}
+
+=======
+
+import java.util.*;
+
+public class Main{
+
+    private static class Pair{
+      public Character ch;
+      public int inx;
+      Pair(Character ch, int inx){
+        this.ch = ch;
+        this.inx = inx;
+      }
+    }
+
+    public static String minRemoveParentheses(String s) {
+
+        // Replace this placeholder return statement with your code
+        Stack<Pair> stack = new Stack<>();
+
+        Pair top;
+        for( int i = 0; i < s.length(); i++  ){
+            char ch = s.charAt(i);
+            if( ch == '(' ){
+              stack.push( new Pair( ch, i));
+            } else if ( ch == ')' ){
+              if( stack.isEmpty() ){
+                stack.push( new Pair(ch,i) );
+              } else {
+                top = stack.peek();
+                if( top != null && top.ch == '(' ){
+                  stack.pop();
+                } else {
+                  stack.push(new Pair(ch, i) );
+                }
+              }
+            }
+
+        }
+
+        StringBuilder sb = new StringBuilder();
+        for( int i = s.length()-1; i >= 0; i-- ){
+          top = stack.isEmpty() ? null : stack.peek();
+          if( top != null && i == top.inx ){
+            stack.pop();
+          } else {
+            sb.append( s.charAt(i) );
+          }
+        }
+        String ans = sb.reverse().toString();
+        return ans;
+
+    }
+}
+
+========
+
+import java.util.*;
+public class FirstMissing{
+
+   private static void swap( int[] nums, int x, int y ){
+     int temp = nums[x];
+     nums[x] = nums[y];
+     nums[y] = temp;
+   }
+
+   public static int firstMissingPositiveInteger(int[] nums) {
+
+      int i = 0;
+      while( i < nums.length ){
+        int num = nums[i];
+        int npos = num-1;
+        if( npos < 0 || npos >= nums.length || i == npos ){
+          i++;
+        } else {
+          if( nums[i] == nums[npos] ){
+            i++;
+          } else {
+            swap( nums, i, npos );
+          }
+        }
+      }
+      int ans = nums.length;
+      for( i = 0; i < nums.length; i++ ){
+        if( nums[i]-1 != i ){
+          ans = i+1;
+          break;
+        }
+      }
+      return ans;
+   }
+}
+
+=====
+
+import java.util.*;
+
+public class Main{
+
+    private static class Pair<P,Q>{
+      public P p;
+      public Q q;
+      private boolean illegal = false;
+      public Pair(P ip, Q iq, boolean b){
+        this.p = ip;
+        this.q = iq;
+        this.illegal = b;
+      }
+    }
+
+    public static Pair<Character, Character> findPair(String a, String b){
+      int i = 0, j = 0;
+      Pair<Character, Character> ans = null;
+      while( i < a.length() && j < b.length() ){
+        if( a.charAt(i) != b.charAt(j) ){
+          ans = new Pair<Character, Character>( a.charAt(i), b.charAt(j), false);
+          System.out.println( ans.p + " , " + ans.q + " , " + ans.illegal );
+          return ans;
+        }
+        i++; j++;
+      }
+      if( i < a.length() && j == b.length() ){
+        ans = new Pair<Character, Character>( null, null, true);
+      }
+      ans = null;
+      return ans;
+    }
+
+    public static String alienOrder(List<String> words) {
+
+        Map<Character, Integer> indegreeMap = new HashMap<>();
+        Map<Character, Set<Character> > adj = new HashMap<>();
+        int size = words.size();
+        // Replace this placeholder return statement with your code
+        if( size == 0 || size == 1){
+          return "";
+        }
+
+        for (String word : words) {
+            for (char c : word.toCharArray()) {
+                indegreeMap.putIfAbsent(c, 0);
+            }
+        }
+
+        String res = "";
+
+        for(int i = 0; i < size-1; i++ ){
+          Pair<Character, Character> pair = findPair( words.get(i), words.get(i+1) );
+          if( pair != null && pair.illegal == true ){
+            System.out.println("illegal: " + pair.p + " " + pair.q );
+            return "";
+          } else if( pair != null && pair.p != null ) {
+
+              System.out.println("adding: " + pair.p + " " + pair.q );
+              adj.computeIfAbsent( pair.p, (k) -> { return new HashSet<Character>(); } );
+              adj.computeIfPresent( pair.p, (k,v) -> { v.add(pair.q); return v; } );
+              indegreeMap.computeIfPresent( pair.q, (k,v) -> v+1 );
+          }
+        }
+
+        StringBuilder sb = new StringBuilder();
+        LinkedList<Character> q = new LinkedList<Character>();
+        for( Map.Entry<Character, Integer> entry : indegreeMap.entrySet() ){
+          if( entry.getValue() == 0 ){
+            q.add( entry.getKey() );
+           // indegreeMap.remove( entry.getKey() );
+            //sb.append(entry.getKey());
+          }
+        }
+
+        while( !q.isEmpty() ){
+          Character ch = q.pollFirst();
+          //indegreeMap.remove( ch );
+          sb.append(ch);
+          if( adj.get(ch) != null ){
+            for( Character ach : adj.get(ch) ){
+              indegreeMap.computeIfPresent( ach, (k,v) -> v-1 );
+              Integer degree = indegreeMap.get(ach);
+              if( degree != null && degree == 0 ){
+                //indegreeMap.remove(ach);
+                q.add(ach);
+
+              }
+            }
+          }
+        }
+
+        if( sb.length() < indegreeMap.size() ){
+          return "";
+        }
+
+        return sb.toString();
+    }
+}
+====
+
+import java.util.*;
+
+public class Solution{
+    private static int bs( int[] nums, int x ){
+      int l = 0, h = nums.length-1, m, inx=nums.length;
+      while( l <= h ){
+        m = (l+h)/2;
+        if( x == nums[m] ){
+          inx = m+1;
+          break;
+        } else if( x < nums[m] ){
+          h = m-1;
+          inx = m;
+        } else {
+          l = m+1;
+        }
+      }
+
+      return inx;
+    }
+
+    public static int[] answerQueries(int[] nums, int[] queries) {
+
+        int[] prefSum = new int[nums.length];
+        int[] res = new int[queries.length];
+
+        Arrays.sort( nums );
+        prefSum[0] = nums[0];
+        for( int i = 1; i < nums.length; i++ ){
+          prefSum[i] = nums[i] + prefSum[i-1];
+        }
+
+        for( int i = 0; i < queries.length; i++ ){
+          int pos = bs( prefSum, queries[i]);
+          res[i] = pos;
+        }
+
+        return res;
+    }
+}
+
+=====
+
+import java.util.*;
+
+public class PathsInMaze {
+
+
+    private static int getCycle( int s, int e, ArrayList<Set<Integer>> adj){
+      HashSet<Integer> s1 = new HashSet<>( adj.get(s) );
+      s1.retainAll( adj.get(e) );
+      return s1.size();
+    }
+
+    public static int numberOfPaths(int n, int[][] corridors) {
+
+        ArrayList<Set<Integer>> adj = new ArrayList<>();
+        for( int i = 0; i < n+1; i++ ){
+          adj.add( i, new HashSet<Integer>() );
+        }
+        int cc = 0;
+        for( int i = 0; i < corridors.length; i++ ){
+          int edge[] = corridors[i];
+          adj.get(edge[0]).add(edge[1]);
+          adj.get(edge[1]).add(edge[0]);
+          cc += getCycle( edge[0], edge[1], adj);
+        }
+
+        return cc;
+    }
+}
+
+=====
+
+import java.util.*;
+import ds_v1.BinaryTree.TreeNode;
+
+// Definiton of a binary tree node class
+// class TreeNode<T> {
+//     T data;
+//     TreeNode<T> left;
+//     TreeNode<T> right;
+
+//     TreeNode(T data) {
+//         this.data = data;
+//         this.left = null;
+//         this.right = null;
+//     }
+// }
+
+public class Solution{
+
+    public static int diameter;
+
+    private static int traverse(TreeNode<Integer> root){
+
+      if( root == null || (root.left == null && root.right == null) )
+        return 0;
+
+      int l = traverse(root.left);
+      int r = traverse(root.right);
+      int pc = 0;
+      pc += (root.left == null) ? 0 : 1;
+      pc += (root.right == null) ? 0 : 1;
+      diameter = Math.max( diameter, l+r+pc);
+      return Math.max(l,r)+1;
+    }
+
+    public static int diameterOfBinaryTree(TreeNode<Integer> root) {
+      diameter = 0;
+      int path = traverse( root );
+
+      return Math.max( diameter, path);
+    }
+}
+====
+
+import java.util.*;
+
+class TimeStamp {
+  HashMap<String, TreeMap<Integer, String>> map;
+
+	public TimeStamp() {
+		// Write your code here
+		this.map = new HashMap<String, TreeMap<Integer, String>>();
+	}
+
+	// Set TimeStamp data variables
+	public boolean setValue(String key, String value, int timestamp) {
+    map.computeIfAbsent( key, (k) -> { return new TreeMap<Integer, String>(); } );
+    map.computeIfPresent( key, (k,im) -> { im.put(timestamp, value); return im; } );
+		return true;
+	}
+
+	// Get the value for the given key and timestamp
+	public String getValue(String key, int timeStamp) {
+    if( map.get(key) == null ){
+      return "";
+    }
+    String ans = map.get(key).floorEntry(timeStamp) != null ? map.get(key).floorEntry(timeStamp).getValue() : "";
+		return ans;
+	}
+}
+
+=====
+import java.util.*;
+import ds_v1.BinaryTree.TreeNode;
+
+// Definiton of a binary tree node class
+// class TreeNode<T> {
+//     T data;
+//     TreeNode<T> left;
+//     TreeNode<T> right;
+
+//     TreeNode(T data) {
+//         this.data = data;
+//         this.left = null;
+//         this.right = null;
+//     }
+// }
+
+public class Solution{
+    public static List<List<Integer>> zigzagLevelOrder(TreeNode<Integer> root) {
+
+      Deque<TreeNode<Integer>> deque = new LinkedList<TreeNode<Integer>>();
+      boolean dir = true;
+      deque.offer(root);
+      List<List<Integer>> ans = new ArrayList<>();
+      while( !deque.isEmpty() ){
+        int size = deque.size();
+        List<Integer> list = new ArrayList<>();
+        if( dir ){
+          for( int i = 0; i < size; i++ ){
+            TreeNode<Integer> cur = deque.pollFirst();
+            if( cur != null ){
+              list.add( (Integer)cur.data );
+              deque.offerLast(cur.left);
+              deque.offerLast(cur.right);
+            }
+          }
+        } else {
+          for( int i = 0; i < size; i++ ){
+            TreeNode<Integer> cur = deque.pollLast();
+            if( cur != null ){
+              list.add( (Integer)cur.data );
+              deque.offerFirst(cur.right);
+              deque.offerFirst(cur.left);
+            }
+          }
+        }
+        if( !list.isEmpty() ){
+          ans.add(list);
+        }
+        dir = !dir;
+
+      }
+
+      // Replace this placeholder return statement with your code
+      return ans;
+    }
+}
+
+=====
+
+import java.util.*;
+
+
+class SearchSuggestion {
+    private Node root;
+
+    private void addWord( String prod ){
+      Node node = root;
+      for( Character c : prod.toCharArray() ){
+        if( node.child[c-'a'] == null ){
+          node.child[c-'a'] = new Node();
+        }
+        node = node.child[c-'a'];
+        node.searchWords.add( prod );
+        if( node.searchWords.size() > 3 ){
+          node.searchWords.pollLast();
+        }
+      }
+    }
+
+    List<List<String>> getProds( String word ){
+      Node node = root;
+      Node par = null;
+      List<List<String>> res = new ArrayList<>();
+      for( Character c : word.toCharArray() ){
+        par = node;
+        node = node.child[c-'a'];
+        if( node != null ){
+          res.add( node.searchWords );
+        } else {
+          node = par;
+          res.add( new ArrayList<>() );
+        }
+      }
+      return res;
+    }
+
+    public List<List<String>> suggestedProducts(String[] products, String searchWord) {
+        root = new Node();
+        Arrays.sort( products );
+        for( String prod : products ){
+          addWord( prod );
+        }
+        List<List<String>> res = getProds( searchWord );
+        // Replace this placeholder return statement with your code
+        return res;
+    }
+}
+
+====
+
+import java.util.*;
+
+public class Solution {
+
+    private static fix(char[] nums, int e, int s){
+        int i;
+        for( i = e; i >= s; i-- ){
+          if( nums[i] < nums[e] ){
+            break;
+          }
+        }
+        if( i == -1 || i == e )
+          return i;
+
+        char temp = nums[i];
+        nums[i] = nums[e];
+        nums[e] = temp;
+        return i+1;
+    }
+
+    public static String findNextPalindrome(String numStr) {
+        char[] nums = numStr.toCharArray();
+        int m = numStr.length()/2;
+        int e = m-1;
+        int s = (numStr.length() % 2) == 0 ? m : m+1;
+
+        int start = 0;
+
+          start = fix( nums, e, start );
+        //} while( start != -1 || start != e );
+
+        if( start == -1 )
+          return "";
+
+        int t;
+        for( int i = e; i > start; i-- ){
+          if( nums[i] > nums[i-1]){
+            t = nums[i];
+            nums[i] = nums[i-1];
+            nums[i-1] = t;
+          }
+        }
+
+
+        for( int ip = e, j = s; ip >= 0 && j < numStr.length(); ip--, j++ ){
+          nums[j] = nums[ip];
+        }
+
+        return new String( nums );
+    }
+}
+
+====
+
+import ds_v1.LinkedList.LinkedListNode;
+import java.util.Arrays;
+
+// Definition of a binary tree node
+// class LinkedListNode<T> {
+//     public T data;
+//     public LinkedListNode<T> next;
+// }
+
+class Solution {
+    private static int count = 0;
+
+    private static LinkedListNode<Integer> reverse( LinkedListNode<Integer> node ){
+      LinkedListNode<Integer> c = node, p = null, n = null;
+      count = 0;
+      while( c != null ){
+        n = c.next;
+        c.next = p;
+        p = c;
+        c = n;
+        count++;
+      }
+      return p;
+    }
+
+    public static int twinSum(LinkedListNode<Integer> head) {
+      LinkedListNode<Integer> s = head, f = head, sp = head, lp, ps = null;
+      while( f != null && f.next != null ){
+        ps = s;
+        s = s.next;
+        f = f.next.next;
+      }
+
+      LinkedListNode<Integer> temp = ps, rev;
+      rev = reverse( ps.next );
+      ps.next = null;
+
+      sp = head;
+      lp = rev;
+      int res = -1;
+      while( count-- > 0 ){
+        res = Math.max( res, sp.data + lp.data);
+        sp = sp.next;
+        lp = lp.next;
+      }
+
+      ps.next = reverse( rev );
+      return res;
+    }
+}
+
+====
+
+public class Solution{
+  public static double findMaxAverage(int[] nums, int k) {
+        int i = 0;
+        long sum = 0;
+        for( ; i< k; i++ ){
+          sum += nums[i];
+        }
+        long maxSum = sum;
+        for( ; i < nums.length; i++ ){
+          sum += nums[i];
+          sum -= nums[i-k];
+          maxSum = Math.max( maxSum, sum );
+        }
+        double ans = (maxSum*1.0)/k;
+        return ans;
+    }
+}
+
+====
+
+// Definition for a Linked List node
+
+// class LinkedListNode {
+//     public int data;
+//     public LinkedListNode next;
+//     public LinkedListNode(int data) {
+//         this.data = data;
+//         this.next = null;
+//     }
+// }
+
+public class Solution {
+    public static LinkedListNode deleteNodes(LinkedListNode head, int m, int n) {
+
+        LinkedListNode c = head, p = null;
+        int nc, mc;
+        while( c != null ){
+          mc = 0;
+          while( mc < m && c != null ){
+            p = c;
+            c = c.next;
+            mc++;
+          }
+
+          nc = 0;
+          while( nc < n && c != null ){
+            c = c.next;
+            nc++;
+          }
+          p.next = c;
+
+        }
+        return head;
+    }
+}
+
+===
+
+import java.util.*;
+
+public class Solution{
+
+    public static int largestInteger (int num) {
+      PriorityQueue<Character> epq = new PriorityQueue<>( Collections.reverseOrder() );
+      PriorityQueue<Character> opq = new PriorityQueue<>( Collections.reverseOrder() );
+
+      String inp = Integer.toString(num);
+      char inpArr[] = inp.toCharArray();
+      for(int i = 0; i < inpArr.length; i++ ){
+        char ch = inpArr[i];
+        int ich = ch - '0';
+        if( ich % 2 == 0 ){
+          epq.offer( ch );
+        } else {
+          opq.offer( ch );
+        }
+      }
+
+      char outArr[] =  new char[inpArr.length];
+      for(int i = 0; i < inpArr.length; i++ ){
+        char ch = inpArr[i];
+        int ich = ch - '0';
+        char och;
+        if( ich % 2 == 0 ){
+          och = epq.poll();
+        } else {
+          och = opq.poll();
+        }
+        outArr[i] = och;
+      }
+
+      String newStr = new String( outArr );
+      Integer res = Integer.parseInt( newStr );
+      return res;
+    }
+}
+
+====
+
+import java.util.*;
+
+public class Solution{
+    public static int countPairs (List<Integer> nums, int target) {
+
+      Collections.sort( nums );
+      int pc = 0;
+      int pinx = 0, min = 0;
+      for( int i = 1; i < nums.size(); i++ ){
+        int toSearch = target-nums.get(i);
+        int inx = Collections.binarySearch( nums, toSearch );
+        System.out.println(">"+toSearch+" found at inx"+ inx);
+        if( inx > 0 ){
+          min = Math.min( i-1, inx);
+          System.out.println("adding "+ (min+1) +" for " + (i-1) + ", inx "+ inx);
+          pc += min+1;
+        } else {
+          pinx = -(inx+1);
+          min = Math.min(i-1, pinx) + 1;
+          System.out.println("2. adding "+ (min+1) +" for " + (i-1) + ", pinx "+ pinx + ", inx " + inx);
+          pc += min;
+        }
+      }
+      return pc;
+
+    }
+}
+
+
+=====
+
+import java.util.*;
+
+public class Main{
+    private static Map<Character, List<String>> map = Map.of('1', List.of(),
+    '2', List.of("a", "b", "c"),
+    '3', List.of("d", "e", "f"),
+    '4', List.of("g", "h", "i"),
+    '5', List.of("j", "k", "l"),
+    '6', List.of("m", "n", "o"),
+    '7', List.of("p", "q", "r", "s"),
+    '8', List.of("t", "u", "v"),
+    '9', List.of("w", "x", "y", "z")
+    );
+
+    public List<String> letterCombinations(String digits){
+
+        char[] dArr = digits.toCharArray();
+        List<String> res = new ArrayList<>();
+        if( digits.length() == 0 ){
+          return res;
+        }
+        List<String> list = map.get(dArr[0]);
+        //List<StringBuilder> sbList = list.stream().map( str -> { return new StringBuilder(str); } ).collect( Collectors.toList() );
+        LinkedList<String> queue = new LinkedList<>(list);
+        for( int i = 1; i < dArr.length; i++ ){
+          char ch = dArr[i];
+          List<String> strList = map.get(ch);
+          int size = queue.size();
+          for( int j = 0; j < size; j++ ){
+            String top = queue.pollFirst();
+            for( String ap : strList ){
+              queue.offerLast( top + ap );
+            }
+          }
+        }
+        //res = queue.stream().map( sb -> sb.toString() ).collect(Collectors.toList() );
+        //return res;
+        return new ArrayList<>(queue);
+    }
+}
+===
+import java.util.List;
+import java.util.ArrayList;
+import ds_v1.BinaryTree.TreeNode;
+
+// Definiton of a binary tree node class
+// class TreeNode<T> {
+//     T data;
+//     TreeNode<T> left;
+//     TreeNode<T> right;
+
+//     TreeNode(T data) {
+//         this.data = data;
+//         this.left = null;
+//         this.right = null;
+//     }
+// }
+
+public class Solution {
+
+    private static List<String> res;
+
+    private void traverse(TreeNode<Integer> root, String path){
+      if( root.left == null && root.right == null ){
+        res.add(path+ root.data);
+        return;
+      }
+      if( root.left != null ){
+        traverse( root.left, path + root.data + "->");
+      }
+      if( root.right != null ){
+        traverse( root.right, path + root.data + "->");
+      }
+    }
+
+    public List<String> binaryTreePaths(TreeNode<Integer> root) {
+        res = new ArrayList<>();
+        traverse( root, "" );
+        return res;
+    }
+}
+
+====
+
+import java.util.*;
+
+public class Solution{
+    public static int findContentChildren(int[] greedFactors, int[] cookieSizes) {
+        if( cookieSizes.length == 0 )
+          return 0;
+
+        PriorityQueue<Integer> childPq = new PriorityQueue<Integer>( Collections.reverseOrder() );
+        for( int gf : greedFactors ){
+          childPq.offer(gf);
+        }
+        PriorityQueue<Integer> cookiePq = new PriorityQueue<Integer>( Collections.reverseOrder() );
+        for( int cs : cookieSizes ){
+          cookiePq.offer(cs);
+        }
+        int count = 0;
+        while( !childPq.isEmpty() && !cookiePq.isEmpty() ){
+          int gf = childPq.poll();
+          if( gf <= cookiePq.peek() ){
+            cookiePq.poll();
+            count++;
+          }
+        }
+        return count;
+    }
+}
+
+====
+
+import java.util.*;
+
+class Solution {
+
+    private static int mc;
+    private static List<int[]> z;
+    private static List<int[]> e;
+    private static int[][] grid;
+
+    public static int minimumMoves(int[][] gridi) {
+      mc = Integer.MAX_VALUE;
+      grid = gridi;
+
+      z = new ArrayList<>();
+      e = new ArrayList<>();
+      int cc = 0;
+      for( int[] row : grid ){
+        for( int cell : row ){
+          cc += cell;
+        }
+      }
+
+      if( cc != 9 ){
+        return -1;
+      }
+
+      for( int i = 0; i < grid.length; i++ ){
+        for( int j = 0; j < grid[0].length; j++ ){
+          if( grid[i][j] == 0 ){
+            z.add( new int[]{i,j} );
+          } else {
+            e.add( new int[]{i, j, grid[i][j]-1 } );
+          }
+        }
+      }
+
+      solve( 0, 0, 0);
+
+      return mc;
+    }
+
+    private static void solve( int zi, int ei, int count){
+      if( zi >= z.size() ){
+        mc = Math.min( mc, count);
+        return;
+      }
+
+      int dist = 0;
+      for( int i = 0; i < e.size(); i++ ){
+        if( e.get(i)[2] > 0 ){
+          e.get(i)[2] -= 1;
+          dist = Math.abs(z.get(zi)[0] - e.get(i)[0]) + Math.abs(z.get(zi)[1] - e.get(i)[1]);
+          solve( zi+1, i, count+dist );
+          e.get(i)[2] += 1;
+        } else {
+          solve( zi, i+1, count);
+        }
+      }
+
+    }
+
+
+}
+
+======
+
+import java.util.*;
+
+class Solution {
+
+    private static int mc;
+    private static List<int[]> z;
+    private static List<int[]> e;
+    private static int[][] grid;
+
+    public static int minimumMoves(int[][] gridi) {
+      mc = Integer.MAX_VALUE;
+      grid = gridi;
+
+      z = new ArrayList<>();
+      e = new ArrayList<>();
+      int cc = 0;
+      for( int[] row : grid ){
+        for( int cell : row ){
+          cc += cell;
+        }
+      }
+
+      if( cc != 9 ){
+        return -1;
+      }
+
+      for( int i = 0; i < grid.length; i++ ){
+        for( int j = 0; j < grid[0].length; j++ ){
+          if( grid[i][j] == 0 ){
+            z.add( new int[]{i,j} );
+          } else {
+            e.add( new int[]{i, j, grid[i][j]-1 } );
+          }
+        }
+      }
+
+      solve( 0, 0, 0);
+
+      return mc;
+    }
+
+    private static void solve( int zi, int ei, int count){
+      if( zi >= z.size() ){
+        mc = Math.min( mc, count);
+        return;
+      }
+
+      int dist = 0;
+      for( int i = 0; i < e.size(); i++ ){
+        if( e.get(i)[2] > 0 ){
+          e.get(i)[2] -= 1;
+          dist = Math.abs(z.get(zi)[0] - e.get(i)[0]) + Math.abs(z.get(zi)[1] - e.get(i)[1]);
+          solve( zi+1, i, count+dist );
+          e.get(i)[2] += 1;
+        }
+      }
+
+    }
+
+
+}
+
+=====
+
+import java.util.*;
+
+class HouseRobber {
+    static int[] money;
+    static int[] dp;
+
+    private static int solve( int inx, int len ){
+      if( inx > len )
+        return 0;
+
+      if( dp[inx] != -1 ){
+        return dp[inx];
+      }
+
+      int take = money[inx] + solve(inx+2, len);
+      int noTake = solve(inx+1, len);
+      int ans = Math.max( take, noTake );
+      dp[inx] = ans;
+      return dp[inx];
+    }
+
+    public static int houseRobber(int[] mone) {
+
+      if( mone.length == 1 ){
+        return mone[0];
+      } else if (mone.length == 2) {
+        return Math.max( mone[0], mone[1] );
+      }
+
+      dp = new int[mone.length+2];
+      Arrays.fill( dp, -1 );
+
+      money = mone;
+      int c1 = solve(0, money.length-2);
+      Arrays.fill( dp, -1 );
+      int c2 = solve(1, money.length-1);
+      int res = Math.max( c1, c2);
+        return res;
+    }
+}
+
+====
+
+import java.util.*;
+
+class HouseRobber {
+    static int[] money;
+    static int[] dp;
+
+    private static int solve( int inx, int len ){
+      if( inx > len )
+        return 0;
+
+      if( dp[inx] != -1 ){
+        return dp[inx];
+      }
+
+      int take = money[inx] + solve(inx+2, len);
+      int noTake = solve(inx+1, len);
+      int ans = Math.max( take, noTake );
+      dp[inx] = ans;
+      return dp[inx];
+    }
+
+    private static int solveItr(int s, int e){
+      int take[] = new int[money.length];
+      int noTake[] = new int[money.length];
+
+      noTake[s] = 0;
+      take[s] = money[s];
+
+      for( int i = s+1; i <= e; i++ ){
+        noTake[i] = Math.max( noTake[i-1], take[i-1]);
+        take[i] = noTake[i-1] + money[i];
+      }
+
+      return Math.max( take[e], noTake[e] );
+
+    }
+
+    private static int solveItrOpt(int s, int e){
+      int noTakePrev, takePrev, noTake = -1, take =-1;
+      noTakePrev = 0;
+      takePrev = money[s];
+
+      for( int i = s+1; i <= e; i++ ){
+        noTake = Math.max( noTakePrev, takePrev);
+        take = noTakePrev + money[i];
+
+        noTakePrev = noTake;
+        takePrev = take;
+      }
+
+      return Math.max( take, noTake );
+
+    }
+
+    public static int houseRobber(int[] mone) {
+
+      if( mone.length == 1 ){
+        return mone[0];
+      } else if (mone.length == 2) {
+        return Math.max( mone[0], mone[1] );
+      }
+
+      dp = new int[mone.length+2];
+      Arrays.fill( dp, -1 );
+
+      money = mone;
+      //int c1 = solve(0, money.length-2);
+      //int c1 = solveItr(0, money.length-2);
+      int c1 = solveItrOpt(0, money.length-2);
+      Arrays.fill( dp, -1 );
+      //int c2 = solve(1, money.length-1);
+      //int c2 = solveItr(1, money.length-1);
+      int c2 = solveItrOpt(1, money.length-1);
+      int res = Math.max( c1, c2);
+        return res;
+    }
+}
+
+====
+
+import java.util.*;
+class Main {
+
+  private static String str;
+  private static List<String> wordDict;
+  private static Map<int[], List<String>> map;
+
+  private static List<String> f( int s, int e ){
+
+    if( s > e ){
+      return List.of("");
+    }
+    List<String> res = new ArrayList<>();
+    for( int i = s; i <= e; i++ ){
+      String subStr = str.substring(s,i+1);
+      if( wordDict.contains(subStr) ){
+        List<String> subList = f(i+1, e);
+        if( !subList.isEmpty() ){
+          for( String subListStr : subList ){
+            if( subListStr.length() > 0 ){
+              res.add( subStr+ " " + subListStr );
+            } else {
+              res.add( subStr );
+            }
+          }
+        }
+      }
+    }
+    return res;
+  }
+
+  private static List<String> f1( int s, int e ){
+
+    if( s > e ){
+      return List.of("");
+    }
+    if( map.containsKey(new int[]{s,e}) ){
+        return map.get(new int[]{s,e});
+    }
+    List<String> res = new ArrayList<>();
+    for( int i = s; i <= e; i++ ){
+      String subStr = str.substring(s,i+1);
+      if( wordDict.contains(subStr) ){
+        List<String> subList = f1(i+1, e);
+        if( !subList.isEmpty() ){
+          for( String subListStr : subList ){
+            if( subListStr.length() > 0 ){
+              res.add( subStr+ " " + subListStr );
+            } else {
+              res.add( subStr );
+            }
+          }
+        }
+      }
+    }
+    map.put(new int[]{s,e}, res);
+    return res;
+  }
+
+  public static List<String> wordBreak(String s, List<String> WordDict) {
+    str = s;
+    wordDict = WordDict;
+    map = new HashMap<>();
+    //List<String> res = f(0,s.length()-1);
+    List<String> res = f1(0,s.length()-1);
+
+    return res;
+  }
+}
+
+===
+
+import java.util.*;
+public class FindCorruptPair{
+   public static int[] findCorruptPair(int[] nums) {
+
+    for( int i = 0; i < nums.length;  ){
+      if( nums[i]-1 == i ){
+        i++;
+      } else {
+        int k = nums[i];
+        if( nums[i] == nums[k-1] ){
+          i++;
+        } else {
+          int temp = nums[i];
+          nums[i] = nums[temp-1];
+          nums[temp-1] = temp;
+        }
+      }
+    }
+
+    int res[] = new int[2];
+    for( int i = 0; i < nums.length; i++ ){
+      if( nums[i]-1 != i ){
+        res[0] = i+1; res[1] = nums[i];
+        break;
+      }
+    }
+
+      return res;
+   }
+}
+
+=====
+
+import java.util.*;
+
+public class Solution {
+   public static int largestRectangle(int[] heights) {
+
+      int n = heights.length;
+      int[] lb = new int[n];
+      int[] rb = new int[n];
+
+      Arrays.fill(lb, 0);
+      Arrays.fill(rb, n - 1);
+
+      Stack<Integer> stack = new Stack<>();
+      stack.push(0);
+      for( int i = 1; i < n; i++ ){
+        if( stack.isEmpty() || heights[i] > heights[stack.peek()] ){
+          stack.push( i );
+        } else {
+          while( !stack.isEmpty() && heights[stack.peek()] >= heights[i] ){
+            stack.pop();
+          }
+          lb[i] = stack.isEmpty() ? 0 : stack.peek() + 1;
+          stack.push(i);
+        }
+      }
+
+      stack = new Stack<>();
+      stack.push(n-1);
+      rb[n-1] = n-1;
+      for( int i = n-2; i>= 0; i-- ){
+        if( stack.isEmpty() || heights[i] > heights[stack.peek()] ){
+          stack.push(i);
+        } else {
+          while( !stack.isEmpty() && heights[i] <= heights[stack.peek()] ){
+            stack.pop();
+          }
+          rb[i] = stack.isEmpty() ? n-1 : stack.peek() - 1;
+          stack.push(i);
+        }
+      }
+
+      System.out.println("lb" + Arrays.toString(lb));
+      System.out.println("rb" + Arrays.toString(rb));
+
+      int maxArea = -1;
+      for( int i = 0; i < n; i++ ){
+        maxArea = Math.max( maxArea, (rb[i]-lb[i]+1)*heights[i] );
+      }
+
+      return maxArea;
+   }
+}
+
+====
+
+import java.util.*;
+
+public class Solution {
+   public static int largestRectangle(int[] heights) {
+
+      int n = heights.length;
+      int[] lb = new int[n];
+      int[] rb = new int[n];
+
+      Arrays.fill(lb, 0);
+      Arrays.fill(rb, n - 1);
+
+      Stack<Integer> stack = new Stack<>();
+      for( int i = 0; i < n; i++ ){
+          while( !stack.isEmpty() && heights[stack.peek()] >= heights[i] ){
+            stack.pop();
+          }
+          lb[i] = stack.isEmpty() ? 0 : stack.peek() + 1;
+          stack.push(i);
+      }
+
+      stack = new Stack<>();
+      for( int i = n-1; i>= 0; i-- ){
+          while( !stack.isEmpty() && heights[i] <= heights[stack.peek()] ){
+            stack.pop();
+          }
+          rb[i] = stack.isEmpty() ? n-1 : stack.peek() - 1;
+          stack.push(i);
+      }
+
+      System.out.println("lb" + Arrays.toString(lb));
+      System.out.println("rb" + Arrays.toString(rb));
+
+      int maxArea = -1;
+      for( int i = 0; i < n; i++ ){
+        maxArea = Math.max( maxArea, (rb[i]-lb[i]+1)*heights[i] );
+      }
+
+      return maxArea;
+   }
+}
+
+===
+
+import java.util.*;
+
+class Solution{
+    public static int minLength (String s) {
+
+      char arr[] = s.toCharArray(), ch;
+      int topi;
+      Stack<Integer> stack = new Stack<>();
+      for( int i = 0; i < arr.length; i++ ){
+        ch = arr[i];
+        if( ch == 'B' || ch == 'D' ){
+          if( stack.isEmpty() ){
+            stack.push(i);
+          } else {
+            topi = stack.peek();
+            if( (ch == 'B' && arr[topi] == 'A') || ( ch =='D' && arr[topi] == 'C') ){
+              stack.pop();
+            } else {
+              stack.push(i);
+            }
+          }
+        } else {
+          stack.push(i);
+        }
+
+      }
+      return stack.size();
+
+    }
+}
+
+
+===
+
+import java.util.*;
+
+public class CloneGraph{
+
+    private static Map<Node,Node> oldNewMap;
+    //private static Map<Node,
+    private static void f(Node oldNode, Node newNode ){
+      if( newNode != null && !newNode.neighbors.isEmpty() ){
+        return;
+      }
+
+
+      for( Node nei : oldNode.neighbors ){
+        oldNewMap.putIfAbsent( nei, new Node(nei.data) );
+        f( nei, oldNewMap.get(nei) );
+        newNode.neighbors.add( oldNewMap.get(nei) );
+      }
+
+
+    }
+
+    public static Node clone(Node root) {
+        oldNewMap = new HashMap<>();
+        Node root2 = new Node(root.data);
+        oldNewMap.put(root, root2);
+        f( root, root2);
+        return root2;
+    }
+}
+
+===
+
+/**
+ * // This interface facilitates the creation of nested lists
+ * // Do not implement or make assumptions about its implementation
+ * public interface NestedInteger {
+ *     // Constructor initializes an empty nested list
+ *     public NestedInteger();
+ *
+ *     // Constructor initializes a single integer
+ *     public NestedInteger(int value);
+ *
+ *     // @return true if this NestedInteger holds a single integer rather than a nested list
+ *     public boolean isInteger();
+ *
+ *     // @return the single integer this NestedInteger holds, if it holds a single integer
+ *     // Otherwise, return null if this NestedInteger holds a nested list
+ *     public Integer getInteger();
+ *
+ *     // Sets this NestedInteger to hold a single integer equal to value
+ *     public void setInteger(int value);
+ *
+ *     // Sets this NestedInteger to hold a nested list and adds the nested integer elem to it
+ *     public void add(NestedInteger ni);
+ *
+ *     // @return the nested list that this NestedInteger holds, if it holds a nested list
+ *     // Otherwise, return empty list if this NestedInteger holds a single integer
+ *     public List<NestedInteger> getList();
+ * }
+ */
+
+import java.util.List;
+
+public class Solution {
+
+    private int maxDepth(List<NestedInteger> nestedList){
+      int maxD = 0;
+      for( NestedInteger ni : nestedList ){
+        if( !ni.isInteger() ){
+          maxD = Math.max( maxD, maxDepth(ni.getList()) );
+        }
+      }
+      return maxD+1;
+    }
+
+    private int weightedDepth( List<NestedInteger> nestedList, int md, int cd ){
+      int res = 0;
+      int wt = md-cd+1;
+      for( NestedInteger ni : nestedList ){
+        if( ni.isInteger() ){
+          res +=  wt*ni.getInteger();
+        } else {
+          res += weightedDepth( ni.getList(), md, cd+1 );
+        }
+      }
+      return res;
+    }
+
+    public int weightedDepthSum(List<NestedInteger> nestedList) {
+
+        int md = maxDepth( nestedList );
+        int res = weightedDepth( nestedList, md, 1 );
+        return res;
+    }
+}
+
+===
+
+// Definiton of a binary tree node class
+// class TreeNode<T> {
+//     T data;
+//     TreeNode<T> left;
+//     TreeNode<T> right;
+
+//     TreeNode(T data) {
+//         this.data = data;
+//         this.left = null;
+//         this.right = null;
+//     }
+// }
+
+import java.util.*;
+import ds_v1.BinaryTree.TreeNode;
+
+
+public class Solution{
+
+    public static boolean f( TreeNode<Integer> l, TreeNode<Integer> r){
+      if( l == null && r == null ){
+        return true;
+      }
+      if( (l == null && r != null) || (l != null && r == null) || ( !Objects.equals( l.data, r.data) ) ){
+        String lstr = (l == null) ? "l0" : l.data.toString();
+        String rstr = (r == null) ? "r0" : r.data.toString();
+        System.out.println("l, r> " + lstr + " : "+ rstr );
+        return false;
+      }
+      boolean b1 = f( l.left, r.right );
+      boolean b2 = f( l.right, r.left );
+      return b1 && b2;
+
+    }
+
+    public static boolean isSymmetric(TreeNode<Integer> root) {
+      boolean res = f( root.left, root.right );
+      return res;
+  }
+}
+
+===
+
+import java.util.*;
+
+public class Solution{
+
+    private static LinkedList<int[]> res;
+    private static Trie trie;
+
+    private static void search(String text, int inx){
+      TrieNode node = trie.root;
+      for( int i = inx; i < text.length(); i++ ){
+        if( node == null ){
+          break;
+        }
+        TrieNode child = node.children.get(text.charAt(i));
+        if( child != null && child.isEndOfWord ){
+          int []temp = new int[2];
+          temp[0] = inx;
+          temp[1] = i;
+          res.offerLast( temp );
+        }
+        node = child;
+      }
+    }
+
+    public static int[][] indexPairs (String text, String[] words) {
+        res = new LinkedList<>();
+        trie = new Trie();
+
+        for( String word : words ){
+          trie.insert(word);
+        }
+
+        for( int i = 0; i < text.length(); i++ ){
+          search( text, i );
+        }
+
+
+        int[][] array = new int[res.size()][]; // Create a 2D array
+        for (int i = 0; i < res.size(); i++) {
+            array[i] = res.get(i); // Copy each int[] to the 2D array
+        }
+        return array;
+
+    }
+}
+
+===
+import java.util.*;
+
+public class Solution {
+    // private static class Pair{
+    //   Character ch;
+    //   Integer freq;
+
+    //   Pair(Character ch, Integer freq){
+    //     this.ch = ch;
+    //     this.freq = freq;
+    //   }
+    // }
+
+    public static int minimumPushes(String word) {
+
+        int[] arr = new int[26];
+        for( char ch : word.toCharArray() ){
+          arr[ ch - 'a' ]++;
+        }
+
+        Arrays.sort( arr );
+        int ans = 0;
+        for( int i = 25; i >= 0; i-- ){
+          int mul = (25-i)/8+1;
+          ans += mul * arr[i];
+        }
+
+        return ans;
+    }
+}
+====
+
+
+
+
+
+
+
+
+
+
+
+
+

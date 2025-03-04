@@ -2,11 +2,14 @@ package javalang.threading;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.concurrent.locks.ReentrantLock;
 
+/*
+each thread inc, dec counter. after end result is 0.
+showcases sleep and wait difference on paralleism
+ */
 public class ThreadSynchronizedLock {
-    private static int NT = 10000;
-    private static int SLEEP = 10;
+    private static int NT = 1000_00;
+    private static int SLEEP = 1000;
 
     public static void main(String[] args) {
 
@@ -36,7 +39,8 @@ public class ThreadSynchronizedLock {
     }
 
     static class Producer implements Runnable {
-        volatile Counter counter;
+        //volatile Counter counter;
+        Counter counter;
         Object lock;
 
         Producer(Counter c, Object lock) {
@@ -49,13 +53,23 @@ public class ThreadSynchronizedLock {
             synchronized (lock) {
                 System.out.println(Thread.currentThread().getName() + " -> counter before inc : " + counter.getCount());
                 counter.increment();
-                // if we sleep holding lock, each thread runs sequentially
-                // try {
-                // Thread.sleep(SLEEP);
-                // } catch (InterruptedException e) {
-                // // TODO Auto-generated catch block
-                // e.printStackTrace();
-                // }
+                /* if we sleep holding lock, each thread runs sequentially */
+                /*
+                 try {
+                    Thread.sleep(SLEEP);
+                 } catch (InterruptedException e) {
+                 // TODO Auto-generated catch block
+                    e.printStackTrace();
+                 }
+                 */
+
+                /* below is faster as threads kind of sleep parallely as they release lock on going into wait */
+                try {
+                    lock.wait(SLEEP);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+
                 System.out.println(Thread.currentThread().getName() + " -> counter after inc: " + counter.getCount());
                 System.out.println(Thread.currentThread().getName() + " -> counter before dec : " + counter.getCount());
                 counter.decrement();

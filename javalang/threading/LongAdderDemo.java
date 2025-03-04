@@ -3,6 +3,15 @@ package javalang.threading;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
+/*
+AtomicLong
+Suitable for low to moderate contention environments. Limited by CAS retries in highly concurrent environments.
+
+LongAdder
+stripped counters, scales well in high contention env
+Slightly inaccurate in intermediate states (e.g., during summation) but accurate overall.
+
+ */
 class LongAdderDemo {
 
     static AtomicLong atomicLong = new AtomicLong(0);
@@ -23,7 +32,7 @@ class LongAdderDemo {
                 executorService.submit(new Runnable() {
                     @Override
                     public void run() {
-                        for (int i = 0; i < 1000000; i++) {
+                        for (int i = 0; i < 1000_000; i++) {
                             atomicLong.incrementAndGet();
                         }
                     }
@@ -48,7 +57,7 @@ class LongAdderDemo {
                 executorService.submit(new Runnable() {
                     @Override
                     public void run() {
-                        for (int i = 0; i < 1000000; i++) {
+                        for (int i = 0; i < 1000_000; i++) {
                             longAdder.increment();
                         }
                     }

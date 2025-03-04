@@ -7,10 +7,13 @@ public class ThreadDeadlock {
         Object obj2 = new Object();
 
         ThreadA threadA = new ThreadA(obj1, obj2);
-        ThreadB threadB = new ThreadB(obj1, obj2);
         threadA.start();
+        /*
+        ThreadB threadB = new ThreadB(obj1, obj2);
         threadB.start();
-
+         */
+        ThreadA threadARev = new ThreadA(obj2, obj1); // reverse order is same as above
+        threadARev.start();
     }
     
     static class ThreadA extends Thread{

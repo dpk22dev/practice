@@ -1,11 +1,11 @@
 package javalang.streams;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.*;
 
 public class StreamExample {
 
@@ -24,9 +24,12 @@ public class StreamExample {
         String strArr[] = {"a", "b", "c"};
         ss1 = Arrays.stream(strArr);
         Collection<String> cs1 = Arrays.asList(strArr);
+
         //cs1.forEach( System.out::println );
         //ss1.forEach(System.out::println );
 //        Stream.of( "a", "b", "c"  ).forEach( System.out::println );
+
+        /* ways to create stream statically */
         Stream<String> aStream = Stream.<String>builder().add("a").build();
 //        aStream.forEach( System.out::println );
         aStream = Stream.generate(() -> "e").limit(10);
@@ -63,10 +66,11 @@ public class StreamExample {
 
         //eStream.collect(Collectors.toUnmodifiableSet()).forEach( p -> System.out.println( p.id ) );
         //eStream.collect(Collectors.toCollection( LinkedList::new ) );
-//        Map<Integer, String> map1 = eStream.collect( toMap(
-//                (p) -> p.id,
-//                (p) -> p.item,
-//                ( x, y ) -> x.length() > y.length() ? x : y ) );
+
+        Map<Integer, String> map1 = eStream.collect(toMap(
+                (p) -> p.id, // generates key from object
+                (p) -> p.item, // generates value from object
+                (x, y) -> x.length() > y.length() ? x : y)); // if x, y values are found corresponding to same key
 //        System.out.println( map1 );
 
 //        long count1 = eStream.collect( counting() );
@@ -75,7 +79,7 @@ public class StreamExample {
         /*
         group by specific key
         * */
-//        Map<Integer, List<Product> > list1 = eStream.collect( groupingBy(p -> p.id, toList() ) );
+        Map<Integer, List<Product>> list1 = eStream.collect(groupingBy(p -> p.id, toList()));
 //        System.out.println( list1 );
 
         /*
@@ -88,6 +92,24 @@ public class StreamExample {
         );
         lls1.stream().flatMap(lizt -> lizt.stream()).filter(x -> x.length() > 2).forEach(System.out::println);
 
+        /*
+        // flatmap can be used to flatten values of internal map
+        // HashMap<String, HashMap<String, Integer>>
+                List<Integer> allValues = outerMap.values().stream()
+                                            .flatMap(innerMap -> innerMap.values().stream())
+                                            .collect(Collectors.toList());
+         */
 
+        /* feed integers/numbers to reducing into int */
+        int sum = productList.stream()
+                .map(p -> p.id)
+                .collect(Collectors.reducing(0, (a, b) -> a + b));
+
+        /* map something of object to collect into list of thing */
+        List<String> nameLengths = productList.stream()
+                .collect(Collectors.mapping(p -> p.item, Collectors.toList()));
+
+        Map<String, Integer> modifiableMap = Map.of("one", 1);
+        Collections.unmodifiableMap(modifiableMap);
     }
 }

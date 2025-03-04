@@ -49,13 +49,15 @@ public class ThreadRentrantLock {
             lock.lock();
             System.out.println(Thread.currentThread().getName() + " -> counter before inc : " + counter.getCount());
             counter.increment();
-            // if we sleep holding lock, each thread runs sequentially
-            // try {
-            // Thread.sleep(SLEEP);
-            // } catch (InterruptedException e) {
-            // // TODO Auto-generated catch block
-            // e.printStackTrace();
-            // }
+            lock.unlock();
+            /* if we sleep holding lock, and don't unlock/lock surrounding; each thread runs sequentially */
+            try {
+                Thread.sleep(SLEEP);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            lock.lock();
             System.out.println(Thread.currentThread().getName() + " -> counter after inc: " + counter.getCount());
             System.out.println(Thread.currentThread().getName() + " -> counter before dec : " + counter.getCount());
             counter.decrement();

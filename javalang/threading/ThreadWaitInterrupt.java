@@ -1,14 +1,18 @@
 package javalang.threading;
 
-import java.util.Random;
-
 public class ThreadWaitInterrupt {
     public static void main(String[] args) {
         MyRunnable myRunnable = new MyRunnable();
         Thread t = new Thread(myRunnable);
         t.start();
         try {
+            /*
+            even though get method of MyRunnable runs on main thread's stack.
+            but synchronized block in MyRunnable waits on myRunnable object itself.
+            notify in run method wakes up thread running get method which is blocked on myRunnable object
+             */
             Integer res = (Integer) myRunnable.get();
+            System.out.println("main: got result " + res);
         } catch (InterruptedException e) {
             System.out.println(Thread.currentThread().getName());
             e.printStackTrace();
@@ -16,7 +20,7 @@ public class ThreadWaitInterrupt {
     }
 
     static class MyRunnable implements Runnable {
-        Integer num = 1;
+        Integer num = null;
 
         @Override
         public void run() {
@@ -29,6 +33,7 @@ public class ThreadWaitInterrupt {
             }
             synchronized (this) {
                 System.out.println(Thread.currentThread() + " notifying all threads");
+                num = 5;
                 notifyAll();
             }
 

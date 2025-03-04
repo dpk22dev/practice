@@ -8,8 +8,10 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import static java.lang.Thread.sleep;
 
 public class RWLockExample {
+    public static final int SLEEP = 5000;
+
     private static class SharedStore {
-        public static final int SLEEP = 5000;
+
         private ReentrantReadWriteLock rwLock = new ReentrantReadWriteLock();
         int x = 1;
 
@@ -55,6 +57,10 @@ public class RWLockExample {
         try {
             executorService.submit(wr);
             executorService.submit(rd);
+            sleep(SLEEP);
+            executorService.submit(rd);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         } finally {
             executorService.shutdown();
             try {

@@ -28,7 +28,14 @@ class FixedThreadPoolWithShutdown {
                 });
             }
         } finally {
+            /*
+            shutdown stop accepting new runnables to be executed. but it allows existing submitted ones to
+            exectur
+             */
             executorService.shutdown();
+            /*
+            wait for existing runnables to be completed untill timeout or current thread is interrupted
+             */
             executorService.awaitTermination(1, TimeUnit.HOURS);
         }
 

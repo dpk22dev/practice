@@ -8,6 +8,7 @@ import static java.lang.Thread.sleep;
 
 /*
 to showcase reads can't happen when writter is in sync block
+showcasing how fixed thread pool executor work
  */
 public class SynchronizedBlockExample {
 

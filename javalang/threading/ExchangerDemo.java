@@ -5,6 +5,18 @@ import java.util.concurrent.*;
 /*
 each thread gets paired with other thread
 in odd #threads one thread will get paired with 2 threads others would be 1 to 1
+
+
+
+
+not a good example to demonstrate its usability. specifically designed for two threads,
+so it is unsuitable for multi-thread communication beyond two participants.
+
+use case: Ping-Pong Tasks Between Threads
+eg: producer generates data in one buffer and a consumer processes data in another buffer,
+the Exchanger can be used to swap the buffers when both are ready.
+
+
  */
 class ExchangerDemo {
 

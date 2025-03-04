@@ -9,6 +9,9 @@ import java.util.stream.IntStream;
 Exceptions are swallowed by Executor service. Thread isn't killed, runnables are scheduled on same thread
 weiredly, even after global exception handler is attached in each thread in thread factory, still no exception is caught !!
 even overriding afterExecute is not getting exception
+
+below demonstrates way to create thread pool executor with thread factory
+
  */
 public class RunnableFailureExample {
 

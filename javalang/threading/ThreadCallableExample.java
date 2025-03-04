@@ -8,7 +8,8 @@ import java.util.concurrent.TimeoutException;
 
 public class ThreadCallableExample {
     private static final int FUTURE_TIMEOUT = 3000;
-    private static final int SLEEP_DURATION = 5000;
+    private static final int SLEEP_DURATION = 2000;
+    /* will throw exception if sleep > future timeout */
 
     public static void main(String[] args) {
         MyCallable myCallable = new MyCallable();
@@ -51,11 +52,14 @@ public class ThreadCallableExample {
 
     static class MyCallable implements Callable {
         @Override
-        public String call() throws Exception {
+        public String call() {
             System.out.println(Thread.currentThread() + "Inside callable");
-            // throw new Exception("callable threw exception", null);
-            Thread.sleep(ThreadCallableExample.SLEEP_DURATION);
-            return "done";
+            /*
+            below exception will be caught in main
+             */
+            throw new RuntimeException("callable threw exception", null);
+            //Thread.sleep(ThreadCallableExample.SLEEP_DURATION);
+            //return "done";
         }
     }
 

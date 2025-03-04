@@ -1,5 +1,10 @@
 package javalang.threading;
 
+/*
+experimentation with multiple scenarios
+tries to join multiple times
+sets global exception handler
+ */
 public class ThreadJoinExample {
 
     public static void main(String[] args) {
@@ -13,7 +18,7 @@ public class ThreadJoinExample {
         t1.start();
         t1.interrupt();
 
-        // start second thread after waiting for 2 seconds or if it's dead
+
         try {
             t1.join(200);
         } catch (Exception e) {
@@ -21,6 +26,7 @@ public class ThreadJoinExample {
         }
         System.out.println("Main: after t1 joined");
         /*
+        // start second thread after waiting for 2 seconds or if it's dead
         t2.start();
 
         // start third thread only when first thread is dead

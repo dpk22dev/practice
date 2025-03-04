@@ -1,11 +1,10 @@
 package javalang.threading;
 /*
- * Runnable doesn't return value similar to futuretask. if we want we have to implement using wait, notify
+ * Runnable doesn't return value similar to futuretask. if we want, we have to implement using wait, notify
  *
  */
 
 import java.util.Random;
-import java.util.random.RandomGenerator;
 
 public class ThreadRunnableExample {
 
@@ -24,6 +23,9 @@ public class ThreadRunnableExample {
         for (int i = 0; i < NUM_THREADS; i++) {
             Integer num = -1;
             try {
+                /*
+                here main thread's get is waiting on individual thread object. threads internally don't wait/notify
+                 */
                 num = (Integer) myRunnable[i].get();
             } catch (InterruptedException e) {
                 // runnables can throw interrupted exceptions
@@ -77,6 +79,11 @@ public class ThreadRunnableExample {
          * 
          */
         public synchronized Object get() throws InterruptedException {
+            /*
+            it can happen in any case that
+            before X thread notifies, main thread is waiting here. this will impact all following thread comm
+            M - Ty
+             */
             while (null == num) {
                 System.out.println(Thread.currentThread() + " waiting for result");
                 wait();
@@ -85,8 +92,8 @@ public class ThreadRunnableExample {
             return num;
         }
 
-        public Object get(long timeoutMS) throws InterruptedException {
-            while (null == num) {
+        public synchronized Object get(long timeoutMS) throws InterruptedException {
+            if (null == num) {
                 wait(timeoutMS);
             }
             return num;

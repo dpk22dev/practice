@@ -13,6 +13,13 @@ same object. single entry is overwritten in hashmap. interface/abstract/actual c
 even though they can refer to different objects in heap
 Even though interface reference is used to point to class, subclass. hashcode, equals of different concrete classes result
 in different hashcode, equals causing multiple entries in hashmap
+
+below method are used for generating hash, checking equality of objects
+Objects.hash
+Objects.equals
+
+super.someMethod() allows to call parent class's method explicitely if that method is overridden in child class
+
  */
 
 public class HashCodeOverride {

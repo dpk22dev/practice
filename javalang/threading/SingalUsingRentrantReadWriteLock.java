@@ -5,7 +5,11 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /*
-consumer not starting buggy code
+I think this is not correct use case of read write lock.
+Better would be multiple writers taking write lock condition to signal each other
+AND multiple readers taking read lock to ensure write lock is not held while reading
+
+consumer is also a writer in below case as it removes element from sharedresource
  */
 
 public class SingalUsingRentrantReadWriteLock {
@@ -17,6 +21,7 @@ public class SingalUsingRentrantReadWriteLock {
         //private Condition dataAvailable = lock.readLock().newCondition();
         private Condition dataAvailable = lock.writeLock().newCondition();
         private Condition spaceAvailable = lock.writeLock().newCondition();
+        private Condition some = lock.readLock().newCondition();
 
         public void produce(int newData) {
             lock.writeLock().lock();
@@ -41,7 +46,12 @@ public class SingalUsingRentrantReadWriteLock {
         }
 
         public void consume() {
-            lock.readLock().lock();
+            lock.writeLock().lock();
+            /*
+            // lock.readLock().lock();
+            The Condition objects (dataAvailable and spaceAvailable) are created using the lock.writeLock().
+            ReentrantReadWriteLock's read lock does not support Condition, that's why await won't work
+            */
             try {
                 // Check if there is data available to consume
                 while (data.isEmpty()) {
@@ -58,7 +68,8 @@ public class SingalUsingRentrantReadWriteLock {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } finally {
-                lock.readLock().unlock();
+                lock.writeLock().unlock();
+                // lock.readLock().unlock();
             }
         }
     }
